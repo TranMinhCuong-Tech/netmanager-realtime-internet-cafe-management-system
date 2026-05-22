@@ -1,0 +1,17 @@
+namespace ServerApp;
+
+static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        ApplicationConfiguration.Initialize();
+
+        using var loginForm = new LoginForm();
+
+        if (loginForm.ShowDialog() == DialogResult.OK)
+        {
+            Application.Run(new MainForm());
+        }
+    }
+}
