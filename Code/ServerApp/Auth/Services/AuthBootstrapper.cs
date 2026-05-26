@@ -28,6 +28,12 @@ public static class AuthBootstrapper {
         return new AuthRuntime(users, sessionRepository, sessionService, auth);
     }
 
+    // Helper cho UI form khi chi can IAuthService, khong can dereference AuthRuntime.
+    public static async Task<IAuthService> CreateAuthServiceAsync(string? databasePath = null, CancellationToken cancellationToken = default) {
+        var runtime = await CreateAsync(databasePath, cancellationToken).ConfigureAwait(false);
+        return runtime.Auth;
+    }
+
     // Chi seed user neu username chua ton tai, de khong ghi de du lieu co san.
     private static async Task SeedUsersAsync(SqliteUserRepository users, CancellationToken cancellationToken) {
         foreach (var seed in BuildSeedUsers()) {
@@ -42,7 +48,7 @@ public static class AuthBootstrapper {
     // Danh sach tai khoan mac dinh cho demo/local test.
     private static IReadOnlyList<SeedAccount> BuildSeedUsers() {
         return new List<SeedAccount> {
-            new("admin", "123", string.Empty, UserRole.Admin, true),
+            new("admin", "123", "PC00", UserRole.Admin, true),
             new("client01", "123", "PC-01", UserRole.Client, true),
             new("client02", "123", "PC-02", UserRole.Client, true)
         };
@@ -70,11 +76,20 @@ internal sealed class AuthDatabase {
     private readonly string _connectionString;
 
     public AuthDatabase(string? databasePath = null) {
-        var path = string.IsNullOrWhiteSpace(databasePath) ? "internet_cafe.db" : databasePath.Trim();
+        var path = ResolveDatabasePath(databasePath);
         _connectionString = $"Data Source={path}";
     }
 
     public SqliteConnection CreateConnection() => new(_connectionString);
+
+    // Dung mot duong dan DB on dinh theo application base directory de UI va runtime khong lech working directory.
+    public static string ResolveDatabasePath(string? databasePath = null) {
+        var path = string.IsNullOrWhiteSpace(databasePath)
+            ? Path.Combine(AppContext.BaseDirectory, "internet_cafe.db")
+            : databasePath.Trim();
+
+        return Path.IsPathRooted(path) ? path : Path.Combine(AppContext.BaseDirectory, path);
+    }
 
     // Tao 2 bang AuthUsers va AuthSessions neu chua ton tai.
     public async Task InitializeAsync(CancellationToken cancellationToken = default) {
