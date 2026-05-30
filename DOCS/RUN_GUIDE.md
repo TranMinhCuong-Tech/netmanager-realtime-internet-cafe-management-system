@@ -8,7 +8,7 @@ This guide documents the approved setup target for the recovery roadmap. Runtime
 - Server startup smoke now opens a responsive login dialog after correcting the UI resource manifest lookup; login result behavior is not yet gate-verified.
 - The build evidence is submitted for M6 verification and does not by itself pass `G0`, because API/auth contract checks remain outstanding.
 - Client startup is an explicit shell artifact and does not prove network/login integration.
-- TCP round-trip, login integration, status and control flow are not verified.
+- TCP listener/dispatcher valid round-trip evidence has been submitted through `R1-N01`; invalid/unsupported packet handling, login integration, status and control flow are not verified.
 - Use `DOCS/TEST_MATRIX.md` for real pass/fail status.
 
 ## Required Environment
@@ -36,7 +36,7 @@ This command must pass before a runtime demo or feature gate can be accepted.
 | Default port | `5000` | Target until `G1` pass |
 | Framing | one UTF-8 JSON object per line | Approved contract target |
 | Auth schema | `AuthUsers`, `AuthSessions` | Canonical recovery path |
-| Database under approved root-run workflow | `internet_cafe.db` in repository root | Matches current selected auth runtime artifact; verify in `G0` |
+| Database under approved root-run workflow | `internet_cafe.db` in repository root | Resolved by `AuthBootstrapper`; keep running from repository root so the canonical SQLite path stays unambiguous |
 | Machine status storage | in-memory connection registry | Core architecture target |
 
 Until a deterministic application data path is implemented and approved, run recovery commands from repository root so the relative SQLite database location is not ambiguous.

@@ -8,6 +8,15 @@ Verification status: `Blocked until G0 tests pass`
 
 This contract is the required runtime target for the recovery roadmap. Existing code artifacts must be corrected and tested against it before integration is considered complete.
 
+### Current freeze evidence (`R1-C02`, submitted `2026-05-27`)
+
+- `dotnet run --project Code/ContractSmoke/ContractSmoke.csproj --no-restore` passes:
+  - `G0-02` packet `type` serializes as string and rejects numeric enum input.
+  - `G0-03` `LOGIN` request/response paths deserialize into distinct payload models.
+  - `G0-03` `LOGIN` request keeps response-only envelope fields (`success`, `message`, `error`) unset.
+  - `G0-04` `LOGIN` failure uses top-level `success: false` and `error.code`.
+- `R1-C02` remains pending M6 verification and M1 approval before gate acceptance.
+
 ## Scope And Scheduling
 
 ### Core packet types required for delivery
@@ -235,6 +244,7 @@ Chat remains direct 1-1 text only: no history, group, file/image, delivery queue
 ## Data And Session Baseline
 
 - Canonical recovery SQLite tables are `AuthUsers` and `AuthSessions`, as owned by M5's selected auth runtime.
+- Canonical recovery runtime is `AuthBootstrapper` backed by `internet_cafe.db` in the repository root; this is the only approved SQLite path for the recovery baseline.
 - Broader `Users/Machines/Sessions` consolidation is retained future work and must not be integrated in parallel before core release.
 - Online/offline and command target state are maintained by an in-memory authenticated connection registry for core delivery.
 - Timer persistence is an extension, not a core database requirement.
